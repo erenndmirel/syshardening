@@ -1,0 +1,22 @@
+# Run as Administrator
+
+$servicesToDisable = @(
+    "RemoteRegistry",    # Unneeded unless you manage registry across network
+    "DiagTrack",         # Connected User Experiences and Telemetry
+    "WSearch",           # Windows Search (if you don't need indexing)
+    "WerSvc",            # Windows Error Reporting (can be logged differently)
+    "Fax",               # Old fax service
+    "PrintSpooler"       # Disable if no local printers
+)
+
+foreach ($svc in $servicesToDisable) {
+    if (Get-Service -Name $svc -ErrorAction SilentlyContinue) {
+        Write-Host "Stopping and disabling service: $svc"
+        Stop-Service -Name $svc -Force -ErrorAction SilentlyContinue
+        Set-Service -Name $svc -StartupType Disabled
+    } else {
+        Write-Host "Service $svc not found or already removed."
+    }
+}
+
+Write-Host "Service lockdown complete. Double‑check for any dependencies you might need."
