@@ -1,0 +1,19 @@
+# Run as Administrator
+
+# Disable the SMBv1 server component
+if ((Get-WindowsOptionalFeature -Online -FeatureName "SMB1Protocol").State -eq "Enabled") {
+    Write-Host "Disabling SMBv1 Server..."
+    Disable-WindowsOptionalFeature -Online -FeatureName "SMB1Protocol" -NoRestart
+} else {
+    Write-Host "SMBv1 Server already disabled."
+}
+
+# Disable the SMBv1 client component
+if ((Get-WindowsOptionalFeature -Online -FeatureName "SMB1Protocol-Client").State -eq "Enabled") {
+    Write-Host "Disabling SMBv1 Client..."
+    Disable-WindowsOptionalFeature -Online -FeatureName "SMB1Protocol-Client" -NoRestart
+} else {
+    Write-Host "SMBv1 Client already disabled."
+}
+
+Write-Host "You must restart to finalize SMBv1 removal."
