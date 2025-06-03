@@ -1,0 +1,18 @@
+# Run as Administrator
+
+# Disable Connected User Experiences (aka Diagnostic Tracking)
+Write-Host "Disabling telemetry..."
+Stop-Service -Name DiagTrack -ErrorAction SilentlyContinue
+Set-Service -Name DiagTrack -StartupType Disabled
+
+# Set telemetry level to 0 (Security) if on Windows 11 Pro/Enterprise (may not work on Home)
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
+
+# Disable pre‑fetch and Windows Tips pop‑ups
+Write-Host "Disabling PreFetch and Windows Tips..."
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisablePreviewPane" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisableSuggestions" -Type DWord -Value 1
+
+Write-Host "Telemetry reduced. Full disable requires Enterprise and group policies."
