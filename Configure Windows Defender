@@ -1,0 +1,23 @@
+# Run as Administrator
+
+# Update Defender signatures
+Write-Host "Updating Defender signatures..."
+Update-MpSignature -ErrorAction SilentlyContinue
+
+# Enable real-time protection
+Write-Host "Enabling Real-Time Protection..."
+Set-MpPreference -DisableRealtimeMonitoring $false
+
+# Enforce cloud-delivered protection (introduces some privacy tradeoff)
+Write-Host "Enabling Cloud-Delivered Protection..."
+Set-MpPreference -MAPSReporting Advanced
+
+# Enable Tamper Protection (requires registry hack)
+Write-Host "Enabling Tamper Protection via registry..."
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows Defender\Features" -Name "TamperProtection" -PropertyType DWord -Value 5 -Force | Out-Null
+
+# Turn on PUA protection (Potentially Unwanted Application)
+Write-Host "Enabling PUA Protection..."
+Set-MpPreference -PUAProtection Enabled
+
+Write-Host "Windows Defender hardened."
