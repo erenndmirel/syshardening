@@ -1,0 +1,22 @@
+# Run as Administrator
+
+# Enable auditing of account logon events, privilege use, policy changes, etc.
+Write-Host "Configuring audit policies..."
+$auditSettings = @(
+    @{Subcategory="AuditAccountLogon"; Setting="Success and Failure"},
+    @{Subcategory="AuditLogon"; Setting="Success and Failure"},
+    @{Subcategory="AuditObjectAccess"; Setting="Failure"},
+    @{Subcategory="AuditPrivilegeUse"; Setting="Failure"},
+    @{Subcategory="AuditPolicyChange"; Setting="Success and Failure"},
+    @{Subcategory="AuditProcessCreation"; Setting="Success"},
+    @{Subcategory="AuditProcessTermination"; Setting="Success"},
+    @{Subcategory="AuditFileSystem"; Setting="Failure"},
+    @{Subcategory="AuditHandleManipulation"; Setting="Failure"},
+    @{Subcategory="AuditDirectoryServiceAccess"; Setting="Failure"}
+)
+
+foreach ($audit in $auditSettings) {
+    AuditPol.exe /set /subcategory:$($audit.Subcategory) /success:$($audit.Setting.Split()[0]) /failure:$($audit.Setting.Split()[1])
+}
+
+Write-Host "Audit policies applied. Review with AuditPol /get /category:*."
