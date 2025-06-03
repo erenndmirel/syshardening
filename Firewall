@@ -1,0 +1,19 @@
+# Run as Administrator
+
+# Reset firewall to clean state
+Write-Host "Resetting Windows Firewall to defaults..."
+(New-Object -ComObject HNetCfg.FwPolicy2).RestoreLocalFirewallDefaults()
+
+# Ensure Domain, Private, and Public profiles are ON and block inbound by default
+Write-Host "Configuring firewall profiles..."
+Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled True -DefaultInboundAction Block -DefaultOutboundAction Allow
+
+# Example: Open RDP only if needed (change or remove if you don’t need RDP)
+Write-Host "Enabling RDP rule (if you require Remote Desktop)..."
+Enable-NetFirewallRule -DisplayGroup "Remote Desktop" -ErrorAction SilentlyContinue
+
+# Example: Allow Windows Update
+Write-Host "Allowing Windows Update..."
+Set-NetFirewallRule -DisplayName "Windows Update" -Enabled True
+
+Write-Host "Firewall configured. Verify specific rules for your environment."
