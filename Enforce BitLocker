@@ -1,0 +1,24 @@
+# Run as Administrator
+
+# Check TPM presence
+$tpm = Get-WmiObject -Namespace "Root\CIMv2\Security\MicrosoftTpm" -Class Win32_Tpm
+if (-not $tpm) {
+    Write-Host "No TPM found. BitLocker encryption of OS drive will be less secure (software-only)."
+} else {
+    Write-Host "TPM found. Good to go."
+}
+
+# Check BitLocker status on C:
+$bitlockerStatus = Get-BitLockerVolume -MountPoint "C:"
+if ($bitlockerStatus.ProtectionStatus -eq "On") {
+    Write-Host "BitLocker already enabled on C: drive."
+} else {
+    Write-Host "Enabling BitLocker on C: drive. You will need to back up the recovery key."
+    # Generates a RecoveryKey (.txt) and saves it to a network share or local path. Change path as needed.
+    $recoveryKeyPath = "C:\Secure\BitLockerKeys"
+    if (-not (Test-Path $recoveryKeyPath)) {
+        New-Item -ItemType Directory -Path $recoveryKeyPath -Force | Out-Null
+    }
+    Enable-BitLocker -MountPoint "C:" -EncryptionMethod XtsAes256 -UsedSpaceOnly -TpmProtector -RecoveryKeyPath $recoveryKeyPath -RecoveryPasswordProtector
+    Write-Host "BitLocker encryption initiated. Check encryption progress with Get-BitLockerVolume."
+}
