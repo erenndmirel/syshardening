@@ -1,0 +1,25 @@
+# Run as Administrator
+
+# 1. Enable module and script block logging
+Write-Host "Enabling PowerShell module logging..."
+New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging" -Name "EnableModuleLogging" -Value 1
+New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging\LogModules" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging\LogModules" -Name "*" -Value "*" -Type MultiString
+
+Write-Host "Enabling Script Block Logging..."
+New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Name "EnableScriptBlockLogging" -Value 1
+
+# 2. Turn on transcription
+Write-Host "Enabling PowerShell transcription..."
+New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "EnableTranscripting" -Value 1
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "OutputDirectory" -Value "C:\Secure\PSLogs"
+
+# 3. Constrained Language Mode for non‑admins
+Write-Host "Enforcing Constrained Language Mode for non-admins..."
+New-Item -Path "HKLM:\Software\Microsoft\PowerShell\1\ShellIds" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\Software\Microsoft\PowerShell\1\ShellIds" -Name "Microsoft.PowerShell" -Value "ConstrainedLanguage"
+
+Write-Host "PowerShell logging and Constrained Language Mode applied."
