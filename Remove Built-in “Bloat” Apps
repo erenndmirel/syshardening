@@ -1,0 +1,32 @@
+# Run as Administrator
+
+# List common built‑in apps to remove
+$bloatApps = @(
+    "Microsoft.XboxGamingOverlay",
+    "Microsoft.XboxApp",
+    "Microsoft.XboxGameCallableUI",
+    "Microsoft.XboxIdentityProvider",
+    "Microsoft.YourPhone",
+    "Microsoft.ZuneMusic",
+    "Microsoft.ZuneVideo",
+    "Microsoft.GetHelp",
+    "Microsoft.Getstarted",
+    "Microsoft.MixedReality.Portal",
+    "Microsoft.Office.OneNote",      # Remove OneNote if you don’t use it
+    "Microsoft.People",             # If you don’t need the People app
+    "Microsoft.SkypeApp",           # If you don’t use Skype
+    "Microsoft.HEVCVideoExtension"  # If you don’t need HEVC codecs
+)
+
+foreach ($app in $bloatApps) {
+    $pkg = Get-AppxPackage -Name $app -AllUsers
+    if ($pkg) {
+        Write-Host "Removing $app..."
+        Remove-AppxPackage -Package $pkg.PackageFullName -ErrorAction SilentlyContinue
+        Remove-AppxProvisionedPackage -Online -PackageName $pkg.PackageName -ErrorAction SilentlyContinue
+    } else {
+        Write-Host "$app not found or already removed."
+    }
+}
+
+Write-Host "Built-in bloat removed. Some remnants may persist until next login."
